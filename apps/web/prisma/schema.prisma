@@ -1,15 +1,14 @@
 // SAASpilot — data model.
-// Local dev uses SQLite (zero-setup). For production, switch `provider` to
-// "postgresql" and point DATABASE_URL at Neon/Supabase, then re-run migrations.
+// Postgres (Railway). DATABASE_URL is set in apps/web/.env (and the repo-root .env).
 // NOTE: list-typed fields (screenshots, field maps) are stored as JSON strings
-// so the schema is portable across SQLite and Postgres.
+// so the schema stayed portable when it was migrated from SQLite.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
