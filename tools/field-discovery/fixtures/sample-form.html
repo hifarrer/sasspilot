@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Submit your product</title>
+  </head>
+  <body>
+    <h1>Submit your product</h1>
+    <form>
+      <label for="pname">Product name</label>
+      <input id="pname" name="product_name" type="text" />
+
+      <label for="tag">Tagline</label>
+      <input id="tag" name="tagline" type="text" placeholder="One catchy line" />
+
+      <label for="site">Website URL</label>
+      <input id="site" name="website" type="url" />
+
+      <label for="email">Your email</label>
+      <input id="email" name="email" type="email" />
+
+      <label for="desc">Description</label>
+      <textarea id="desc" name="description"></textarea>
+
+      <label for="cat">Category</label>
+      <select id="cat" name="category">
+        <option value="">Pick one</option>
+        <option value="saas">SaaS</option>
+        <option value="ai">AI</option>
+      </select>
+
+      <label for="tw">Twitter</label>
+      <input id="tw" name="twitter" type="url" />
+
+      <label for="promo">Promo code</label>
+      <input id="promo" name="promo" type="text" />
+
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>

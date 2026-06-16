@@ -1,0 +1,54 @@
+{
+  "directorySlug": "producthunt-com",
+  "domain": "producthunt.com",
+  "sourceUrl": "file:///D:/Sites/StartupAutoSubmit/tools/field-discovery/fixtures/sample-form.html",
+  "discoveredBy": "playwright",
+  "generatedAt": "2026-06-13T21:34:12.528Z",
+  "requiresLogin": false,
+  "confidence": 0.88,
+  "fields": [
+    {
+      "canonicalKey": "startupName",
+      "selector": "#pname",
+      "selectorType": "css",
+      "inputType": "text"
+    },
+    {
+      "canonicalKey": "tagline",
+      "selector": "#tag",
+      "selectorType": "css",
+      "inputType": "text"
+    },
+    {
+      "canonicalKey": "websiteUrl",
+      "selector": "#site",
+      "selectorType": "css",
+      "inputType": "url"
+    },
+    {
+      "canonicalKey": "email",
+      "selector": "#email",
+      "selectorType": "css",
+      "inputType": "email"
+    },
+    {
+      "canonicalKey": "longDescription",
+      "selector": "#desc",
+      "selectorType": "css",
+      "inputType": "textarea"
+    },
+    {
+      "canonicalKey": "category",
+      "selector": "#cat",
+      "selectorType": "css",
+      "inputType": "select"
+    },
+    {
+      "canonicalKey": "twitter",
+      "selector": "#tw",
+      "selectorType": "css",
+      "inputType": "url"
+    }
+  ],
+  "review": []
+}

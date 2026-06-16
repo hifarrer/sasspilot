@@ -1,0 +1,178 @@
+// SAASpilot — data model.
+// Local dev uses SQLite (zero-setup). For production, switch `provider` to
+// "postgresql" and point DATABASE_URL at Neon/Supabase, then re-run migrations.
+// NOTE: list-typed fields (screenshots, field maps) are stored as JSON strings
+// so the schema is portable across SQLite and Postgres.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Directory {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  name           String
+  domain         String
+  submissionUrl  String
+  domainRating   Int?
+  category       String?
+  categoryRank   Int?
+  categorySize   Int?
+  cost           String    @default("free") // free | paid | freemium
+  backlinkType   String    @default("none") // dofollow | nofollow | none
+  editorsPick    Boolean   @default(false)
+  knownFor       String?
+  description    String?
+  instructions   String?
+  requiresLogin  Boolean   @default(false)
+  language       String    @default("en")
+  source         String    @default("clakr") // clakr | public | manual
+  sourceUrl      String?
+  lastVerifiedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  submissions Submission[]
+  fieldMaps   FieldMap[]
+
+  @@index([category])
+  @@index([domainRating])
+}
+
+// ─── Auth.js (NextAuth v5) models ──────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+
+  accounts    Account[]
+  sessions    Session[]
+  profiles    Profile[]
+  submissions Submission[]
+  apiTokens   ApiToken[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── App models ──────────────────────────────────────────────────────────
+
+model Profile {
+  id               String   @id @default(cuid())
+  userId           String
+  startupName      String
+  tagline          String   @default("")
+  shortDescription String   @default("")
+  longDescription  String   @default("")
+  websiteUrl       String   @default("")
+  contactEmail     String   @default("")
+  founderName      String   @default("")
+  logoUrl          String?
+  screenshotsJson  String   @default("[]") // JSON string[] of image URLs
+  category         String?
+  pricingModel     String?
+  twitter          String?
+  linkedin         String?
+  github           String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@index([userId])
+}
+
+model Submission {
+  id          String    @id @default(cuid())
+  userId      String
+  profileId   String
+  directoryId String
+  status      String    @default("not_started") // not_started | pending | submitted | published | rejected
+  submittedAt DateTime?
+  publishedAt DateTime?
+  postUrl     String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  directory Directory @relation(fields: [directoryId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, directoryId])
+  @@index([userId])
+}
+
+model FieldMap {
+  id             String    @id @default(cuid())
+  directoryId    String
+  domain         String
+  version        Int       @default(1)
+  fieldsJson     String    @default("[]") // JSON FieldMapEntry[]
+  discoveredBy   String    @default("manual") // playwright | manual | heuristic
+  confidence     Float     @default(0)
+  lastVerifiedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  directory Directory @relation(fields: [directoryId], references: [id], onDelete: Cascade)
+
+  @@unique([directoryId, version])
+  @@index([domain])
+}
+
+model ApiToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  label      String
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
