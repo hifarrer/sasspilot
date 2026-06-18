@@ -62,8 +62,27 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           className="mx-auto mt-16 max-w-6xl px-4 py-8 text-xs"
           style={{ color: "var(--text-muted)" }}
         >
-          Directory metadata includes Ahrefs Domain Rating. Built for human-reviewed submissions —
-          no auto-submitting bots.
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="font-semibold" style={{ color: "var(--text)" }}>
+              SAASregistry
+            </span>
+            <Link href="/directories" className="hover:underline">
+              Directories
+            </Link>
+            <Link href="/extension" className="hover:underline">
+              Extension
+            </Link>
+            <Link href="/privacy" className="hover:underline">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:underline">
+              Terms
+            </Link>
+          </div>
+          <p className="mt-3">
+            Directory metadata includes Ahrefs Domain Rating. Built for human-reviewed submissions —
+            no auto-submitting bots.
+          </p>
         </footer>
       </body>
     </html>
