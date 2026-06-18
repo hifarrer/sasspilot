@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { authConfigured, enabledProviders, signIn } from "@/auth";
+import { PasswordSignInForm } from "./PasswordSignInForm";
 
 export const metadata: Metadata = {
   title: "Sign in — SAASregistry",
   description:
-    "Sign in to SAASregistry with Google or GitHub to save startup profiles and track your directory submissions.",
+    "Sign in to SAASregistry to save startup profiles and track your directory submissions.",
 };
 
 export default async function SignInPage({
@@ -16,6 +17,10 @@ export default async function SignInPage({
   const { callbackUrl } = await searchParams;
   // Only allow internal redirects, so this can't become an open redirect.
   const redirectTo = callbackUrl?.startsWith("/") ? callbackUrl : "/dashboard";
+  const signupHref = callbackUrl
+    ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    : "/signup";
+
   return (
     <div className="mx-auto flex max-w-md flex-col gap-5 py-12">
       <div className="flex flex-col items-center gap-2 text-center">
@@ -39,42 +44,48 @@ export default async function SignInPage({
 
       {!authConfigured ? (
         <div className="card p-6 text-sm" style={{ color: "var(--text-muted)" }}>
-          OAuth isn&apos;t configured yet. Add <code>AUTH_GITHUB_ID</code> /{" "}
-          <code>AUTH_GITHUB_SECRET</code> (or the Google equivalents) to{" "}
+          Sign-in isn&apos;t configured yet. Set <code>AUTH_SECRET</code> in{" "}
           <code>apps/web/.env.local</code> and restart the dev server.
         </div>
       ) : (
-        <div className="card flex flex-col gap-3 p-6">
+        <div className="card flex flex-col gap-4 p-6">
+          <PasswordSignInForm callbackUrl={callbackUrl} />
+
           {enabledProviders.github && (
-            <form
-              action={async () => {
-                "use server";
-                await signIn("github", { redirectTo });
-              }}
-            >
-              <button className="btn w-full justify-center" type="submit">
-                Continue with GitHub
-              </button>
-            </form>
+            <>
+              <div
+                className="flex items-center gap-3 text-xs"
+                style={{ color: "var(--text-muted)" }}
+              >
+                <span className="h-px flex-1" style={{ background: "var(--border)" }} />
+                or
+                <span className="h-px flex-1" style={{ background: "var(--border)" }} />
+              </div>
+              <form
+                action={async () => {
+                  "use server";
+                  await signIn("github", { redirectTo });
+                }}
+              >
+                <button className="btn btn-ghost w-full justify-center" type="submit">
+                  Continue with GitHub
+                </button>
+              </form>
+            </>
           )}
-          {enabledProviders.google && (
-            <form
-              action={async () => {
-                "use server";
-                await signIn("google", { redirectTo });
-              }}
-            >
-              <button className="btn w-full justify-center" type="submit">
-                Continue with Google
-              </button>
-            </form>
-          )}
+
           <p className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
-            🔒 Secure sign-in via Google or GitHub. We use OAuth — we never see or store your
-            password.
+            🔒 Passwords are hashed and never stored in plain text.
           </p>
         </div>
       )}
+
+      <p className="text-center text-sm" style={{ color: "var(--text-muted)" }}>
+        Don&apos;t have an account?{" "}
+        <Link href={signupHref} className="underline" style={{ color: "var(--accent)" }}>
+          Create one
+        </Link>
+      </p>
 
       <p className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
         By continuing you agree to our{" "}
