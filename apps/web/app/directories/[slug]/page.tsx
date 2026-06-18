@@ -16,7 +16,7 @@ export default async function DirectoryDetailPage({
 
   const steps = [
     `Open ${d.domain} and find the submit / "add your product" page (create an account if required).`,
-    "Open the SAASpilot extension and pick your startup profile.",
+    "Open the SAASregistry extension and pick your startup profile.",
     'Click "Fill this page" — the extension maps your profile onto this site\'s fields.',
     "Review every field, then submit. Mark it Submitted in your dashboard and save the live link.",
   ];

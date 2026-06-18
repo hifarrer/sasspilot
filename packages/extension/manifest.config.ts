@@ -2,13 +2,13 @@ import { defineManifest } from "@crxjs/vite-plugin";
 
 export default defineManifest({
   manifest_version: 3,
-  name: "SAASpilot",
+  name: "SAASregistry",
   version: "0.1.0",
   description:
     "Pre-fill startup-directory submission forms from one profile. Human-reviewed — never auto-submits.",
   action: {
     default_popup: "src/popup/index.html",
-    default_title: "SAASpilot",
+    default_title: "SAASregistry",
   },
   background: {
     service_worker: "src/background/background.ts",

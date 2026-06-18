@@ -10,7 +10,7 @@ export interface PageText {
 export async function fetchPageText(url: string): Promise<PageText> {
   const res = await fetch(url, {
     headers: {
-      "user-agent": "SAASpilot/0.1 (startup description generator)",
+      "user-agent": "SAASregistry/0.1 (startup description generator)",
       accept: "text/html,application/xhtml+xml",
     },
     signal: AbortSignal.timeout(10_000),

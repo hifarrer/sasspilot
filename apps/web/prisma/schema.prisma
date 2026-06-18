@@ -1,4 +1,4 @@
-// SAASpilot — data model.
+// SAASregistry — data model.
 // Postgres (Railway). DATABASE_URL is set in apps/web/.env (and the repo-root .env).
 // NOTE: list-typed fields (screenshots, field maps) are stored as JSON strings
 // so the schema stayed portable when it was migrated from SQLite.

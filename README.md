@@ -1,4 +1,4 @@
-# SAASpilot
+# SAASregistry
 
 Submit your startup to 1,000+ directories without filling the same form a thousand times.
 

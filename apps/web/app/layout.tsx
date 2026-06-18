@@ -5,7 +5,7 @@ import { getSessionUser } from "@/lib/authz";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SAASpilot — submit your startup everywhere",
+  title: "SAASregistry — submit your startup everywhere",
   description:
     "A curated catalog of 1,000+ startup-submission directories, plus a browser extension that pre-fills every form.",
 };
@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 ▲
               </span>
               <span>
-                SAAS<span style={{ color: "var(--accent)" }}>pilot</span>
+                SAAS<span style={{ color: "var(--accent)" }}>registry</span>
               </span>
             </Link>
             <div className="flex items-center gap-4 text-sm">

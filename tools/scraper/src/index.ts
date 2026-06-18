@@ -12,7 +12,7 @@ const SITEMAP_CACHE = path.resolve(__dirname, "../.cache/sitemap-en.xml");
 const DATA_DIR = path.join(REPO_ROOT, "data");
 
 const SITEMAP_URL = "https://www.clakr.com/sitemap-en.xml";
-const UA = "SAASpilot/0.1 (research; polite crawler)";
+const UA = "SAASregistry/0.1 (research; polite crawler)";
 const CONCURRENCY = 4;
 const DELAY_MS = 250;
 

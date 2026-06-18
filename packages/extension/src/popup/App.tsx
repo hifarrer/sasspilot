@@ -304,7 +304,7 @@ export function App() {
   const header = (
     <header>
       <h1>
-        SAAS<span style={{ color: "var(--accent)" }}>pilot</span>
+        SAAS<span style={{ color: "var(--accent)" }}>registry</span>
       </h1>
       {signedIn && (
         <div className="account">
