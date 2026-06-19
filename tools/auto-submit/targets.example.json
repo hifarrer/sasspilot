@@ -1,0 +1,10 @@
+{
+  "$comment": "Copy to targets.json and edit. List the directory slugs you want to submit to. Find slugs in the web app or data/directories.json. `submitUrl` and `allowPaid` are optional per-target overrides.",
+  "profileId": null,
+  "targets": [
+    { "slug": "producthunt-com" },
+    { "slug": "betalist-com" },
+    { "slug": "some-paid-dir", "allowPaid": true },
+    { "slug": "custom-url-dir", "submitUrl": "https://example.com/submit" }
+  ]
+}

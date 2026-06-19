@@ -4,9 +4,9 @@ import { APP_URL } from "./config";
  * Sign in via the web app and return a freshly minted access token.
  *
  * Opens the app's `/extension/connect` page in Chrome's auth popup. That page mints a
- * personal access token against the user's web session (logging in with Google first if
- * needed) and redirects back to this extension's chromiumapp.org URL with the token in
- * the hash. Chrome captures that redirect and hands the URL back here.
+ * personal access token against the user's web session (prompting for email/password
+ * sign-in first if needed) and redirects back to this extension's chromiumapp.org URL
+ * with the token in the hash. Chrome captures that redirect and hands the URL back here.
  */
 export async function connectAccount(): Promise<string> {
   // chrome.identity only exists once the "identity" permission is active. If the extension

@@ -31,6 +31,11 @@ test-results/
 playwright-report/
 .playwright/
 
+# auto-submit tool: persistent login profile (live session cookies), run artifacts, user target list
+tools/auto-submit/.profile/
+tools/auto-submit/.runs/
+tools/auto-submit/targets.json
+
 # logs / os
 *.log
 .DS_Store

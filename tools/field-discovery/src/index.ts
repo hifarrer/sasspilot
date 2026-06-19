@@ -1,7 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { classifyField, type FieldSignals, shouldFill } from "@aisas/shared/classifier";
+import { classifyField, shouldFill } from "@aisas/shared/classifier";
+import { extractInPage, type RawField } from "@aisas/shared/extract-in-page";
 import type { FieldMapEntry } from "@aisas/shared/types";
 import { chromium } from "playwright";
 
@@ -9,84 +10,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "../../..");
 const OUT_DIR = path.join(REPO_ROOT, "data", "field-maps");
 
-interface RawField {
-  signals: FieldSignals;
-  selector: string;
-  isPassword: boolean;
-}
-
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
   return i !== -1 ? process.argv[i + 1] : undefined;
-}
-
-/** Runs in the page: collect every fillable field's signals + a stable CSS selector. */
-function extractInPage(): RawField[] {
-  const cssEscape = (s: string) =>
-    (window as { CSS?: { escape?: (v: string) => string } }).CSS?.escape?.(s) ??
-    s.replace(/["\\]/g, "\\$&");
-
-  function selectorFor(el: Element): string {
-    if (el.id) return `#${cssEscape(el.id)}`;
-    const name = el.getAttribute("name");
-    if (name) {
-      const sel = `${el.tagName.toLowerCase()}[name="${name.replace(/"/g, '\\"')}"]`;
-      if (document.querySelectorAll(sel).length === 1) return sel;
-    }
-    const parts: string[] = [];
-    let node: Element | null = el;
-    while (node && node !== document.body && node.parentElement) {
-      let part = node.tagName.toLowerCase();
-      const sameTag = Array.from(node.parentElement.children).filter(
-        (c) => c.tagName === node!.tagName,
-      );
-      if (sameTag.length > 1) part += `:nth-of-type(${sameTag.indexOf(node) + 1})`;
-      parts.unshift(part);
-      node = node.parentElement;
-    }
-    return parts.join(" > ");
-  }
-
-  function labelFor(el: Element): string {
-    const id = el.getAttribute("id");
-    if (id) {
-      const l = document.querySelector(`label[for="${cssEscape(id)}"]`);
-      if (l?.textContent) return l.textContent;
-    }
-    const wrap = el.closest("label");
-    if (wrap?.textContent) return wrap.textContent;
-    const lb = el.getAttribute("aria-labelledby");
-    if (lb) {
-      const ref = document.getElementById(lb);
-      if (ref?.textContent) return ref.textContent;
-    }
-    const prev = el.previousElementSibling;
-    if (prev?.textContent && prev.textContent.length < 80) return prev.textContent;
-    return "";
-  }
-
-  const els = Array.from(
-    document.querySelectorAll("input, textarea, select"),
-  ) as HTMLInputElement[];
-  return els.map((el) => {
-    const tag = el.tagName.toLowerCase();
-    const type = tag === "input" ? el.type : tag;
-    return {
-      selector: selectorFor(el),
-      isPassword: type === "password",
-      signals: {
-        label: labelFor(el).replace(/\s+/g, " ").trim(),
-        name: el.getAttribute("name"),
-        id: el.getAttribute("id"),
-        placeholder: el.getAttribute("placeholder"),
-        ariaLabel: el.getAttribute("aria-label"),
-        autocomplete: el.getAttribute("autocomplete"),
-        type,
-        tagName: tag,
-        maxLength: el.maxLength && el.maxLength > 0 ? el.maxLength : null,
-      },
-    };
-  });
 }
 
 async function main() {
