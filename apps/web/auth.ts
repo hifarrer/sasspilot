@@ -42,6 +42,9 @@ export const authConfigured = providers.length > 0;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
+  // Running behind Railway's proxy, the forwarded Host header isn't trusted by
+  // default (Auth.js throws UntrustedHost). Trust it so callbacks resolve.
+  trustHost: true,
   // Credentials sign-in requires JWT sessions (it can't persist a DB session).
   session: { strategy: "jwt" },
   providers,
