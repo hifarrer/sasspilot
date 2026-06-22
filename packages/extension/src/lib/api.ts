@@ -1,6 +1,7 @@
 import type { GenerateDescriptionOutput } from "@aisas/shared/schemas";
 import type { FieldMap, StartupProfile } from "@aisas/shared/types";
 import { APP_URL } from "./config";
+import type { EmptyField, FieldValue } from "./messages";
 import { getSettings } from "./storage";
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
@@ -77,6 +78,19 @@ export async function generateDescription(
     method: "POST",
     body: JSON.stringify({ url, model }),
   });
+}
+
+/** Ask the backend AI to fill leftover empty fields, grounded in the profile. */
+export async function fillFields(
+  profile: StartupProfile,
+  fields: EmptyField[],
+  model?: string,
+): Promise<FieldValue[]> {
+  const { values } = await api<{ values: FieldValue[] }>("/api/ai/fill-fields", {
+    method: "POST",
+    body: JSON.stringify({ profile: toProfileInput(profile), fields, model }),
+  });
+  return values;
 }
 
 export async function findDirectoryByDomain(domain: string): Promise<DirectoryLite | null> {

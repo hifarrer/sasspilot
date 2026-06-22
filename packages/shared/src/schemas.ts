@@ -38,6 +38,36 @@ export const profileInput = z.object({
 });
 export type ProfileInput = z.infer<typeof profileInput>;
 
+/** AI fill of arbitrary leftover form fields — request. */
+export const fillFieldsInput = z.object({
+  profile: profileInput,
+  fields: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string().optional(),
+        name: z.string().optional(),
+        placeholder: z.string().optional(),
+        nearbyText: z.string().optional(),
+        type: z.string(),
+        tag: z.string(),
+        maxLength: z.number().nullable().optional(),
+        classifiedKey: z.string().nullable().optional(),
+        options: z.array(z.string()).optional(),
+      }),
+    )
+    .max(60),
+  model: z.enum(["claude-sonnet-4-6", "claude-opus-4-8"]).optional(),
+});
+export type FillFieldsInput = z.infer<typeof fillFieldsInput>;
+export type FillFieldDescriptor = FillFieldsInput["fields"][number];
+
+/** AI fill of arbitrary leftover form fields — response. */
+export const fillFieldsOutput = z.object({
+  values: z.array(z.object({ id: z.string(), value: z.string() })),
+});
+export type FillFieldsOutput = z.infer<typeof fillFieldsOutput>;
+
 export const submissionStatus = z.enum([
   "not_started",
   "pending",

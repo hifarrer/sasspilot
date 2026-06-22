@@ -5,25 +5,45 @@ import { type BrowserContext, chromium } from "playwright";
 import { log } from "./log";
 import { PROFILE_DIR } from "./paths";
 
-const USER_AGENT =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
-
 /**
  * Open the persistent Chromium context. The on-disk profile dir IS the session
  * store, so logins captured during `login` are reused on every later run.
+ *
+ * We make it look like a normal browser so sign-in flows — especially "Sign in with
+ * Google", which refuses "automated" browsers with "This browser may not be secure" —
+ * aren't blocked: use the real installed Chrome (channel), drop the --enable-automation
+ * flag, disable the AutomationControlled blink feature, and hide navigator.webdriver.
  */
 export async function openContext(opts: { headed: boolean }): Promise<BrowserContext> {
   await mkdir(PROFILE_DIR, { recursive: true });
-  const context = await chromium.launchPersistentContext(PROFILE_DIR, {
+
+  const launchOpts = {
     headless: !opts.headed,
     viewport: { width: 1280, height: 900 },
-    userAgent: USER_AGENT,
-  });
-  // tsx/esbuild wraps named functions with __name(); define it in every page so a
-  // serialized page.evaluate(extractInPage) resolves it ("__name is not defined").
+    ignoreDefaultArgs: ["--enable-automation"],
+    args: ["--disable-blink-features=AutomationControlled"],
+  };
+
+  let context: BrowserContext;
+  try {
+    // Real Chrome is far less likely to be flagged than bundled Chromium.
+    context = await chromium.launchPersistentContext(PROFILE_DIR, { ...launchOpts, channel: "chrome" });
+  } catch {
+    // Chrome not installed — fall back to bundled Chromium (Google login may still block).
+    context = await chromium.launchPersistentContext(PROFILE_DIR, launchOpts);
+  }
+
   await context.addInitScript(() => {
+    // tsx/esbuild wraps named functions with __name(); define it so a serialized
+    // page.evaluate(extractInPage) resolves it ("__name is not defined").
     const g = globalThis as unknown as { __name?: (f: unknown) => unknown };
     g.__name ??= (f) => f;
+    // Hide the automation marker some sign-in flows check.
+    try {
+      Object.defineProperty(navigator, "webdriver", { get: () => undefined });
+    } catch {
+      // some contexts disallow redefining; ignore
+    }
   });
   return context;
 }

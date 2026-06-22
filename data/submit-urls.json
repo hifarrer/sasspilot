@@ -1,0 +1,72 @@
+{
+  "linkedin-com-groups-1789386": {
+    "submitUrl": "https://www.linkedin.com/groups/1789386/",
+    "homepageUrl": "https://www.linkedin.com/groups/1789386/",
+    "confidence": "manual",
+    "method": "manual",
+    "verified": false,
+    "isManual": true,
+    "reason": "community/platform — submit manually",
+    "checkedAt": "2026-06-19T15:57:30.752Z"
+  },
+  "saashub-com": {
+    "submitUrl": "https://saashub.com/submit",
+    "homepageUrl": "https://www.saashub.com/",
+    "confidence": "high",
+    "method": "probe",
+    "verified": true,
+    "isManual": false,
+    "reason": null,
+    "checkedAt": "2026-06-19T15:57:32.741Z"
+  },
+  "betalist-com": {
+    "submitUrl": "https://betalist.com/submit",
+    "homepageUrl": "https://betalist.com/",
+    "confidence": "high",
+    "method": "probe",
+    "verified": false,
+    "isManual": false,
+    "reason": "submission form is behind login/CAPTCHA",
+    "checkedAt": "2026-06-19T15:57:33.109Z"
+  },
+  "launchingnext-com": {
+    "submitUrl": "https://www.launchingnext.com/submit/",
+    "homepageUrl": "https://www.launchingnext.com/",
+    "confidence": "high",
+    "method": "crawl",
+    "verified": true,
+    "isManual": false,
+    "reason": null,
+    "checkedAt": "2026-06-19T15:57:33.104Z"
+  },
+  "producthunt-com": {
+    "submitUrl": "https://www.producthunt.com/products/new",
+    "homepageUrl": "https://www.producthunt.com/",
+    "confidence": "low",
+    "method": "ai",
+    "verified": false,
+    "isManual": false,
+    "reason": "Product Hunt is a well-known self-serve platform where founders submit their own products at the standard /products/new path, which is widely documented.",
+    "checkedAt": "2026-06-19T16:06:13.569Z"
+  },
+  "indiehackers-com": {
+    "submitUrl": "https://www.indiehackers.com/",
+    "homepageUrl": "https://www.indiehackers.com/",
+    "confidence": "manual",
+    "method": "manual",
+    "verified": false,
+    "isManual": true,
+    "reason": "community/platform — submit manually",
+    "checkedAt": "2026-06-19T16:05:56.068Z"
+  },
+  "alternativeto-net": {
+    "submitUrl": "https://alternativeto.net/add-app/",
+    "homepageUrl": "https://alternativeto.net/",
+    "confidence": "low",
+    "method": "ai",
+    "verified": false,
+    "isManual": false,
+    "reason": "AlternativeTO is a well-known directory with a self-serve \"Add App\" submission flow, typically found at /add-app/, though the homepage was blocked by Cloudflare and could not be directly scraped.",
+    "checkedAt": "2026-06-19T16:06:13.907Z"
+  }
+}

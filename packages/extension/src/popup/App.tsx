@@ -4,6 +4,7 @@ import {
   createProfile,
   fetchFieldMap,
   fetchProfiles,
+  fillFields,
   findDirectoryByDomain,
   generateDescription,
   markSubmitted,
@@ -11,7 +12,7 @@ import {
 } from "../lib/api";
 import { connectAccount } from "../lib/auth";
 import { APP_URL } from "../lib/config";
-import type { FillResult } from "../lib/messages";
+import type { AiFillResult, EmptyField, FillResult } from "../lib/messages";
 import {
   DEFAULT_SETTINGS,
   getProfiles,
@@ -274,6 +275,44 @@ export function App() {
     }
   }
 
+  // Second pass: scan whatever "Fill this page" left empty (text, rich-text, selects,
+  // radios) and ask the backend AI to fill it, grounded in the active profile.
+  async function onAiFill() {
+    if (!active.startupName.trim()) {
+      setNote({ kind: "warn", text: "Add a startup name first." });
+      return;
+    }
+    setBusy("aifill");
+    setNote(null);
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id) throw new Error("No active tab.");
+      const scan = (await chrome.tabs
+        .sendMessage(tab.id, { type: "SCAN_EMPTY" })
+        .catch(() => null)) as { fields: EmptyField[] } | null;
+      if (!scan) {
+        throw new Error("Couldn't reach the page — open the submission form, reload, then retry.");
+      }
+      if (scan.fields.length === 0) {
+        setNote({ kind: "ok", text: "No empty fields to fill." });
+        return;
+      }
+      const values = await fillFields(active, scan.fields);
+      const res = (await chrome.tabs
+        .sendMessage(tab.id, { type: "FILL_FIELDS", values })
+        .catch(() => null)) as AiFillResult | null;
+      if (!res) throw new Error("Couldn't apply values — reload the page and retry.");
+      setNote({
+        kind: "ok",
+        text: `AI-filled ${res.filled} of ${scan.fields.length} empty field(s). Review before submitting.`,
+      });
+    } catch (e) {
+      setNote({ kind: "warn", text: (e as Error).message });
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function onMarkSubmitted() {
     if (active.id === "new") {
       setNote({ kind: "warn", text: "Save the profile first to track submissions." });
@@ -434,6 +473,12 @@ export function App() {
         <button onClick={onFill} disabled={busy === "fill"}>
           {busy === "fill" ? "Filling…" : "Fill this page"}
         </button>
+        <button onClick={onAiFill} disabled={busy === "aifill"}>
+          {busy === "aifill" ? "AI filling…" : "AI fill rest"}
+        </button>
+      </div>
+
+      <div className="row">
         <button className="ghost" onClick={onMarkSubmitted} disabled={busy === "mark"}>
           {busy === "mark" ? "…" : "Mark submitted"}
         </button>

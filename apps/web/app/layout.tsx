@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { signOut } from "@/auth";
+import { isAutoSubmitEnabled } from "@/lib/autoSubmitEnabled";
 import { getSessionUser } from "@/lib/authz";
 import "./globals.css";
 
@@ -35,6 +36,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/dashboard" className="hover:underline">
                 Dashboard
               </Link>
+              {isAutoSubmitEnabled() && (
+                <Link href="/dashboard/auto-submit" className="hover:underline">
+                  Auto-submit
+                </Link>
+              )}
               <Link href="/extension" className="hover:underline">
                 Extension
               </Link>

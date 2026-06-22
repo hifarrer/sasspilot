@@ -1,5 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { GenerateDescriptionOutput } from "@aisas/shared";
+import type {
+  FillFieldDescriptor,
+  FillFieldsOutput,
+  GenerateDescriptionOutput,
+  ProfileInput,
+} from "@aisas/shared";
 
 // Default model. The user chose Sonnet for cost in the approved plan; Opus 4.8 is
 // selectable per-request for higher quality.
@@ -87,4 +92,89 @@ Write compelling, accurate copy grounded ONLY in what the page actually says —
     category: raw.category ?? "",
     keywords: (raw.keywords ?? []).slice(0, 12),
   };
+}
+
+const FILL_TOOL = {
+  name: "save_field_values",
+  description: "Save the best value for each empty form field on a startup submission page.",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      values: {
+        type: "array",
+        description: "One entry per input field. Use the same id you were given.",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "The field id from the input list." },
+            value: {
+              type: "string",
+              description:
+                "The value to fill, or an empty string if the field should be left blank.",
+            },
+          },
+          required: ["id", "value"],
+        },
+      },
+    },
+    required: ["values"],
+  },
+};
+
+export async function generateFieldValues(opts: {
+  profile: ProfileInput;
+  fields: FillFieldDescriptor[];
+  model?: string;
+}): Promise<FillFieldsOutput> {
+  const client = getClient();
+  if (!client) throw new Error("ANTHROPIC_API_KEY is not configured");
+
+  const prompt = `You are filling out a startup-submission form (directories like Product Hunt or BetaList). You are given the user's startup profile and a list of form fields that are still empty. Produce the best value for each field.
+
+Startup profile (the only source of truth — never invent emails, URLs, names, or claims not present here):
+<profile>
+${JSON.stringify(opts.profile, null, 2)}
+</profile>
+
+Empty fields to fill:
+<fields>
+${JSON.stringify(opts.fields, null, 2)}
+</fields>
+
+Rules:
+- Return exactly one entry per field, reusing its "id".
+- Draw values from the profile. For description / about / pitch / summary fields, write compelling but accurate copy grounded ONLY in the profile; respect "maxLength" when present.
+- "classifiedKey" is a hint for which profile field a field maps to.
+- If a field has "options" (a dropdown or radio group), the value MUST be exactly one of those option strings, or "" if none fit.
+- Return "" for fields you cannot responsibly fill: passwords, captchas, coupon/promo codes, payment, OTP/verification codes, dates, or anything unrelated to the profile.
+- Do not fabricate social links, emails, or URLs that are not in the profile.
+
+Then call the ${FILL_TOOL.name} tool with all values.`;
+
+  const res = await client.messages.create({
+    model: opts.model || DEFAULT_MODEL,
+    max_tokens: 4096,
+    tools: [FILL_TOOL],
+    tool_choice: { type: "tool", name: FILL_TOOL.name },
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const block = res.content.find((b) => b.type === "tool_use");
+  if (!block || block.type !== "tool_use") {
+    throw new Error("Model did not return field values");
+  }
+  const raw = block.input as { values?: Array<{ id?: unknown; value?: unknown }> };
+  const byMaxLen = new Map(opts.fields.map((f) => [f.id, f.maxLength ?? null]));
+
+  const values = (raw.values ?? [])
+    .filter((v) => typeof v.id === "string")
+    .map((v) => {
+      const id = String(v.id);
+      let value = typeof v.value === "string" ? v.value : "";
+      const max = byMaxLen.get(id);
+      if (max && value.length > max) value = value.slice(0, max);
+      return { id, value };
+    });
+
+  return { values };
 }

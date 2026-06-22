@@ -14,6 +14,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@aisas/auto-submit':
+        specifier: workspace:*
+        version: link:../../tools/auto-submit
       '@aisas/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -172,6 +175,34 @@ importers:
       p-limit:
         specifier: ^6.1.0
         version: 6.2.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.0
+        version: 22.19.21
+      tsx:
+        specifier: ^4.19.2
+        version: 4.22.4
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  tools/submit-url-finder:
+    dependencies:
+      '@aisas/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@anthropic-ai/sdk':
+        specifier: ^0.32.1
+        version: 0.32.1
+      cheerio:
+        specifier: ^1.0.0
+        version: 1.2.0
+      p-limit:
+        specifier: ^6.1.0
+        version: 6.2.0
+      playwright:
+        specifier: ^1.49.1
+        version: 1.60.0
     devDependencies:
       '@types/node':
         specifier: ^22.10.0

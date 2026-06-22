@@ -20,6 +20,7 @@ out/
 
 # data caches (keep committed datasets, ignore scraper cache)
 tools/scraper/.cache/
+tools/submit-url-finder/.cache/
 data/cache/
 
 # test / coverage

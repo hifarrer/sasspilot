@@ -1,0 +1,23 @@
+{
+  "name": "@aisas/submit-url-finder",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dry": "tsx src/index.ts --limit 15",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aisas/shared": "workspace:*",
+    "@anthropic-ai/sdk": "^0.32.1",
+    "cheerio": "^1.0.0",
+    "p-limit": "^6.1.0",
+    "playwright": "^1.49.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

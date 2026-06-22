@@ -62,7 +62,7 @@ pnpm --filter @aisas/auto-submit start run --submit
 | --- | --- | --- |
 | `--dry-run` / `--submit` | `--dry-run` | Fill only vs actually click submit |
 | `--targets <path>` | `./targets.json` | Target list file |
-| `--slugs a,b,c` | — | Inline targets (overrides the file) |
+| `--slugs a,b,c` | — | Inline targets (overrides the file). **PowerShell: quote it** — `--slugs "a,b,c"` — or commas become an array. |
 | `--profile-id <id>` | first profile | Which startup profile to submit |
 | `--limit <n>` | all | Cap how many sites this run |
 | `--headed` | headless | Show the browser |

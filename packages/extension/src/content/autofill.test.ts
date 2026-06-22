@@ -55,6 +55,15 @@ describe("fillPage — heuristic mode", () => {
     expect(val("c")).toBe("");
   });
 
+  it("fills a contenteditable rich-text description editor", () => {
+    document.body.innerHTML = `
+      <label for="d">Project Description</label>
+      <div id="d" contenteditable="true"></div>`;
+    fillPage(profile, null, { includeHidden: true });
+    const editor = document.getElementById("d")!;
+    expect(editor.textContent).toBe(profile.longDescription);
+  });
+
   it("dispatches input + change events so controlled inputs register the value", () => {
     document.body.innerHTML = `<label for="n">Product name</label><input id="n" name="product_name" />`;
     let input = 0;

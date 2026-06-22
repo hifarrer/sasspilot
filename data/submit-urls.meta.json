@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-06-19T16:06:14.058Z",
+  "catalogTotal": 1057,
+  "resolved": 7,
+  "byMethod": {
+    "manual": 2,
+    "probe": 2,
+    "crawl": 1,
+    "ai": 2
+  },
+  "byConfidence": {
+    "manual": 2,
+    "high": 3,
+    "low": 2
+  },
+  "verified": 2,
+  "needsAttention": 2,
+  "failures": [
+    "producthunt-com",
+    "alternativeto-net"
+  ]
+}
